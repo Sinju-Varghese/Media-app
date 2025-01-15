@@ -1,12 +1,35 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { TiHomeOutline } from "react-icons/ti";
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
+import { watchHistoryAPI } from '../Services/allAPIs';
+import { MdDelete } from "react-icons/md";
 
 function WatchHistory() {
+   
+const[history,setHistory] = useState()
+
+  const getHistory = async() =>{
+    const result = await watchHistoryAPI()
+    console.log(result);
+    setHistory(result.data)
+  }
+  console.log(history);
+  
+  const handleDelete = async(id) =>{
+    const result = await  deleteWatchHistoryAPI(id)
+    console.log(result);
+    window.location.reload()
+  }
+
+  useEffect(()=>{
+    getHistory();
+
+  },[])
+
   return (
     <div>
       <Row>
@@ -25,21 +48,24 @@ function WatchHistory() {
       <thead>
         <tr>
           <th>SL No</th>
-          <th>Caption</th>
-          <th>Url</th>
-          <th>Time sTamp</th>
+          <th>caption</th>
+          <th>url</th>
+          <th>timestamp</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-          <td>hijk</td>
-        </tr>
-        
+        {
+          history?history.map((item,index)=>(
+            <tr>
+            <td>{index+1}</td>
+            <td>{item.caption}</td>
+            <td>{item.url}</td>
+            <td>{item.timestamp}</td>
+            <td><MdDelete onClick={()=>handleDelete(item.id)} className='fs-1 text-danger' /></td>
+          </tr>
+          )):"No Data"
+        }
       </tbody>
     </Table>
         </Col>
